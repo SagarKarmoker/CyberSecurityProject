@@ -1,0 +1,52 @@
+sudo su
+snort --version
+apt install snort
+(give address range  192.168.56.0/24)
+snort –version
+(go to files ->etc->snort)
+(There is a file name snort.conf, here you will find all the rules that snort follows. You can add custome rules also so befor changing anything copy the file)
+sudo cp /etc/snort/snort.conf snort_backup.conf
+cd /etc/snort/
+sudo gedit snort.conf
+(change in line 65)
+ipvar HOME_NET 192.168.56.0/24
+snort -T -c /etc/snort/snort.conf
+cd
+cd /etc/snort/rules
+ls
+sudo gedit local.rules
+--(paste it)
+# $Id: local.rules,v 1.11 2004/07/23 20:15:44 bmc Exp $
+# ----------------
+# LOCAL RULES
+# ----------------
+# This file intentionally does not come with signatures.  Put your local
+# additions here.
+
+#Alart on any ftp connection attempt
+alert tcp any any -> $HOME_NET 21 (msg: "FTP Connection attempt"; sid:1000001; rev:1;)
+
+#Alart on any ICMP connection attempt
+alert icmp any any -> $HOME_NET any (msg: "ICMP Connection attempt"; sid:1000002; rev:1;)
+--/
+
+(To check that the configurat)
+snort -T -c /etc/snort/snort.conf
+
+sudo snort -A console -q -c /etc/snort/snort.conf -i enp0s3
+
+
+---------------------- Block ip address ------------------------------
+( Manually )
+sudo iptables -A INPUT -s 192.168.56.102/24 -j DROP
+
+sudo iptables -L INPUT -n --line-numbers
+
+(undo it change the line number)
+sudo iptables -D INPUT 7
+
+(stops SSH attemps)
+cd
+cd /etc
+sudo gedit hosts.deny
+sshd: 192.168.56.102/24 (add this line)

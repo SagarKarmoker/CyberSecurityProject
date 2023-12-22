@@ -1,0 +1,29 @@
+sudo gedit /etc/apache2/apache2.conf
+
+ServerName 192.168.56.101
+
+sudo service apache2 restart
+sudo service apache2 status
+
+tail /var/log/apache2/error.log
+
+--------------------------
+sagar@server:/etc/apache2/sites-available$ cat ocsp.ewubdca.com.conf
+
+<VirtualHost *:80>
+
+    ServerAdmin webmaster@localhost
+
+	ServerName ocsp.ewubdca.com
+
+	ProxyPass / http://127.0.0.1:8081/
+
+    ProxyPassReverse / http://127.0.0.1:8081/
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+--------------------------------

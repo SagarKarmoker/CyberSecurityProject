@@ -1,0 +1,30 @@
+sudo ufw default allow outgoing
+sudo ufw default deny incoming
+
+sudo ufw enable
+
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 53
+sudo ufw allow 3000
+sudo ufw allow 5000
+sudo ufw allow 8081
+
+sudo ufw show added
+
+sudo ufw status 
+
+sudo ufw deny 22/tcp
+
+#port change
+sudo nano /etc/ssh/sshd_config
+# Port 22
+Port 3000
+sudo systemctl restart sshd
+ssh -p 3000 username@hostname_or_IP
+
+------
+sudo apt install openssh-server
+sudo systemctl start ssh
+sudo systemctl enable ssh
+sudo ufw allow ssh

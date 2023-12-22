@@ -1,0 +1,158 @@
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+
+-------
+sudo ufw app list
+sudo ufw allow 'Apache Full'
+sudo ufw enable
+sudo ufw status
+sudo systemctl status apache2
+sudo mkdir /var/www/ewubdca.com
+cd /var/www/
+sudo chown -R sagar:sagar /var/www/ewubdca.com
+sudo chmod -R 755 /var/www/ewubdca.com
+sudo gedit /var/www/ewubdca.com/index.html
+
+--------
+index.html 
+--------
+
+cd /etc/apache2/sites-available/
+sudo gedit ewubdca.com.conf
+sudo a2dissite 000-default.conf
+sudo a2ensite ewubdca.com.conf
+sudo a2enmod ssl
+sudo apache2ctl configtest
+systemctl restart apache2
+systemctl status apache2
+
+--------
+
+SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName ewubdca.com
+
+	Redirect permanent / https://www.ewubdca.com
+	
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+
+<VirtualHost *:443>
+    ServerAdmin webmaster@localhost
+    ServerName www.ewubdca.com
+    ServerAlias www.ewubdca.com
+    DocumentRoot /var/www/ewubdca.com
+	
+	SSLEngine on
+	SSLCertificateFile /home/sagar/Desktop/AcmeCA/ca/server/certs/chained.crt
+	SSLCertificateKeyFile /home/sagar/Desktop/AcmeCA/ca/server/private/server.key
+	
+	# Configure OCSP Stapling
+    SSLUseStapling on
+    SSLStaplingResponderTimeout 5
+    SSLStaplingReturnResponderErrors off
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+--------
+
+
+<VirtualHost *:80>
+
+    ServerAdmin webmaster@localhost
+
+    ServerName cnn.com
+
+    ServerAlias www.cnn.com
+
+    DocumentRoot /var/www/cnn.com
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
+
+
+
+<VirtualHost *:80>
+
+   ServerName verysecureserver.com
+
+   
+
+</VirtualHost>
+
+
+
+
+
+<VirtualHost *:443>
+
+    ServerAdmin webmaster@localhost
+
+    ServerName verysecureserver.com
+
+    ServerAlias www.verysecureserver.com
+
+    DocumentRoot /var/www/verysecureserver.com
+
+    SSLEngine on
+
+    SSLCertificateFile /media/sf_VM_Shared_Folder/verysecureserver-chained.crt
+
+    SSLCertificateKeyFile /media/sf_VM_Shared_Folder/verysecureserver.com.key
+
+    
+
+    SSLUseStapling on
+
+    
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+
+sudo mkdir /var/www/apply.ewubdca.com
+cd /var/www/
+sudo chown -R sagar:sagar /var/www/apply.ewubdca.com
+sudo chmod -R 755 /var/www/apply.ewubdca.com
+sudo gedit /var/www/apply.ewubdca.com/index.html
+
+sudo mkdir /var/www/verysecureserver.com
+cd /var/www/
+sudo chown -R sagar:sagar /var/www/verysecureserver.com
+sudo chmod -R 755 /var/www/verysecureserver.com
+sudo gedit /var/www/verysecureserver.com/index.html
+
+
+
+sudo gedit apply.ewubdca.com.conf
+sudo gedit download.ewubdca.com.conf
+sudo gedit ocsp.ewubdca.com.conf
+
+sudo a2ensite apply.ewubdca.com.conf
+sudo a2ensite download.ewubdca.com.conf
+sudo a2ensite ocsp.ewubdca.com.conf
+
+sudo a2enmod ssl
+sudo apache2ctl configtest
+systemctl restart apache2
+systemctl status apache2
+
+
+sudo gedit cnn.com.conf
+sudo gedit bbc.com.conf
+
+sudo a2ensite cnn.com.conf
+sudo a2ensite bbc.com.conf

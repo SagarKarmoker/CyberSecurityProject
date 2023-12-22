@@ -1,0 +1,20 @@
+#must edit sub-ca.conf file 
+
+openssl genrsa -out server/private/verysecureserver.com.key 2048
+
+cd server/
+openssl req -key private/verysecureserver.com.key -new -sha256 -out csr/verysecureserver.com.csr 
+
+cd ../sub-ca/
+openssl ca -config sub-ca.conf -extensions server_cert -days 365 -notext -in ../server/csr/verysecureserver.com.csr -out ../server/certs/verysecureserver.com.crt
+
+ls newcerts/
+
+cd ../server/certs
+ls
+
+// this is only need for nginx (not for apache)
+cat verysecureserver.com.crt ../../sub-ca/certs/sub-ca.crt ../../root-ca/certs/ca.crt > verysecureserver-chained.crt
+
+--------------------
+cat sub-ca.crt ../../root-ca/certs/ca.crt > ca-chained.crt

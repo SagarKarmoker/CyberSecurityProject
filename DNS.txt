@@ -1,0 +1,140 @@
+named -v 
+cd /etc/bind
+hostnamectl status
+dnsdomainname
+sudo gedit /etc/hosts/
+
+----
+127.0.1.1	server.ewubdca.com         server
+192.168.56.101  server.ewubdca.com         server
+
+127.0.1.1	server.verysecureserver.com         server
+192.168.56.101  server.verysecureserver.com         server
+
+127.0.1.1	server.cnn.com         server
+192.168.56.101  server.cnn.com         server
+
+127.0.1.1	server.bbc.com         server
+192.168.56.101  server.bbc.com         server
+
+----
+dnsdomainname
+hostname --fqdn
+
+sudo cp named.conf.options named.conf.options.default
+sudo gedit named.conf.options
+
+-----
+recursion yes;
+listen-on {192.168.56.101;};
+allow-transfer {none;};
+
+forwarders {
+    192.168.56.0;
+};
+
+----
+
+sudo cp named.conf.local named.conf.local.default
+sudo gedit named.conf.local
+
+-----
+//forward lookup zone
+zone "ewubdca.com" IN{
+	type master;
+	file "/etc/bind/db.ewubdca.com";
+};
+
+zone "cnn.com" IN{
+	type master;
+	file "/etc/bind/db.cnn.com";
+};
+
+//reverse lookup zone
+zone "56.168.192.in-addr.arpa" IN {
+	type master;
+	file "/etc/bind/db.56.168.192";
+};
+
+-----
+
+sudo cp db.local db.ewubdca.com
+sudo gedit db.ewubdca.com
+------
+;
+; BIND data file for local loopback interface
+;
+$TTL	604800
+@	IN	SOA	ns1.ewubdca.com. root.ewubdca.com. (
+			      2		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+@	IN	NS	ns1.ewubdca.com.
+ns1	IN	A	192.168.56.101
+www	IN	A	192.168.56.101
+ftp	IN	A	192.168.56.101
+apply	IN	A	192.168.56.101
+download	IN	A	192.168.56.101
+ocsp	IN	A	192.168.56.101
+@	IN	MX	10        mail
+mail	IN	A	192.168.56.101
+@	IN	AAAA	::1
+
+-----
+
+named-checkzone ewubdca.com db.ewubdca.com
+sudo cp db.127 db.56.168.192
+sudo gedit db.56.168.192
+
+
+----
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL	604800
+@	IN	SOA	ns1.ewubdca.com. root.ewubdca.com. (
+			      1		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+@	IN	NS	ns1.ewubdca.com.
+24	IN	PTR	ns1.ewubdca.com.
+24	IN	PTR	www.ewubdca.com.
+24	IN	PTR	ftp.ewubdca.com.
+24	IN	PTR	mail.ewubdca.com.
+
+----
+named-checkzone 56.168.192.in-addr.arpa db.56.168.192
+
+named-checkconf
+
+systemctl start bind9.service
+sudo service bind9 restart
+systemctl status bind9.service
+
+nslookup ewubdca.com
+nslookup apply.ewubdca.com
+nslookup download.ewubdca.com
+nslookup ocsp.ewubdca.com
+
+cat /etc/resolv.conf
+sudo rm /etc/resolv.conf
+sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+sudo gedit /etc/resolv.conf
+
+------
+nameserver	192.168.56.101
+search localdomain
+------
+
+https://www.ewubdca.com/
+
+nslookup www.ewubdca.com
+nslookup www.bbc.com
+nslookup www.cnn.com
+nslookup www.verysecureserver.com

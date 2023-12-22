@@ -1,0 +1,26 @@
+-----------------------100 % working -----------------------------
+
+openssl ocsp -port 8081 -text -rsigner /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/sub-ca.crt -rkey /home/sagar/Desktop/AcmeCA/ca/sub-ca/private/sub-ca.key -CA /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/ca-chained.crt -index /home/sagar/Desktop/AcmeCA/ca/sub-ca/index
+
+#client
+openssl ocsp -issuer /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/sub-ca.crt -CAfile /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/ca-chained.crt -cert /media/sf_VM_Shared_Folder/verysecureserver-chained.crt -url http://localhost:8081 -resp_text
+
+
+cd sub-ca
+openssl ca -config sub-ca.conf -revoke /media/sf_VM_Shared_Folder/verysecureserver.com.crt
+
+------------------------------------
+--using domain
+openssl ocsp -host http://ocsp.ewubdca.com -port 8081 -text -rsigner /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/sub-ca.crt -rkey /home/sagar/Desktop/AcmeCA/ca/sub-ca/private/sub-ca.key -CA /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/ca-chained.crt -index /home/sagar/Desktop/AcmeCA/ca/sub-ca/index
+
+openssl ocsp -issuer /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/sub-ca.crt -CAfile /home/sagar/Desktop/AcmeCA/ca/sub-ca/certs/ca-chained.crt -cert /media/sf_VM_Shared_Folder/verysecureserver-chained.crt -url http://ocsp.ewubdca.com:8081 -resp_text
+
+cd sub-ca
+openssl ca -config sub-ca.conf -revoke /media/sf_VM_Shared_Folder/verysecureserver.com.crt
+
+sudo gedit crlnumber
+openssl ca -config sub-ca.conf -gencrl -out crl/rev.crl
+
+-----------------------------100 %working --------------------------
+
+openssl ocsp -issuer /media/sf_VM_Shared_Folder/ca-chained.crt -CAfile /media/sf_VM_Shared_Folder/ca-chained.crt -cert /media/sf_VM_Shared_Folder/verysecureserver-chained.crt -url http://ocsp.ewubdca.com:8081 -resp_text
